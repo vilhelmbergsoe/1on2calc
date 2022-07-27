@@ -4,8 +4,12 @@
 
 #define INNER_BOARD_LENGTH 145.0
 #define OUTER_BOARD_LENGTH 45.0
-#define MIN_INNER_BOARD_SPACING 5.0
-#define MAX_INNER_BOARD_SPACING 15.0
+#define IDEAL_INNER_BOARD_SPACING 10.0
+
+typedef struct {
+    int board_count;
+    double inner_board_spacing;
+} solution;
 
 int main(int argc, char *argv[]) {
     /* parse command line arguments */
@@ -20,11 +24,13 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    printf("wall length: %lf\n", WALL_LENGTH);
+    printf("wall length: %lf\n\n", WALL_LENGTH);
 
     /* board_count is initialized to max amount of boards possible */
-    int board_count = floor(WALL_LENGTH/INNER_BOARD_LENGTH), solution_count = 0;
+    int board_count = floor(WALL_LENGTH/INNER_BOARD_LENGTH);
     double total_inner_board_spacing, inner_board_spacing;
+
+    solution solution = {.inner_board_spacing = -1.0, .board_count = -1};
     for(;;) {
         if (board_count <= 1) {
             break;
@@ -34,24 +40,23 @@ int main(int argc, char *argv[]) {
         total_inner_board_spacing = WALL_LENGTH-(INNER_BOARD_LENGTH*board_count);
         inner_board_spacing = total_inner_board_spacing/(board_count-1);
 
-        /* if spacing fits requirements print solution */
-        if (inner_board_spacing >= MIN_INNER_BOARD_SPACING && inner_board_spacing <= MAX_INNER_BOARD_SPACING) {
-            printf("---\n");
-            printf("board count: %d\n", board_count);
-            printf("inner board spacing: %lf\n", inner_board_spacing);
-            printf("total inner board spacing: %lf\n", total_inner_board_spacing);
-
-            solution_count++;
+        /* if spacing is closer to ideal board spacing make it the active solution */
+        if (fabs(inner_board_spacing-IDEAL_INNER_BOARD_SPACING) < fabs(solution.inner_board_spacing-IDEAL_INNER_BOARD_SPACING)) {
+            if (inner_board_spacing < OUTER_BOARD_LENGTH) {
+                solution.inner_board_spacing = inner_board_spacing;
+                solution.board_count = board_count;
+            }
         }
 
         board_count--;
     }
 
-    if (solution_count > 0) {
-        printf("---\n");
-        printf("%d solutions found\n", solution_count);
-    } else {
+    if (solution.board_count == -1) {
         fprintf(stderr, "error: no solution found\n");
+    } else {
+        printf("best solution found:\n");
+        printf("board count: %d\n", solution.board_count);
+        printf("inner board spacing: %lf\n", solution.inner_board_spacing);
     }
 
     return 0;

@@ -11,16 +11,11 @@ what spacing should be used for 1 on 2 boarding.
 ./1on2calc
 usage: ./1on2calc <wall length millimeter>
 ./1on2calc 5000
----
-board count: 33
-inner board spacing: 6.718750
-total inner board spacing: 215.000000
----
+wall length: 5000.000000
+
+best solution found:
 board count: 32
 inner board spacing: 11.612903
-total inner board spacing: 360.000000
----
-2 solutions found
 ```
 
 ## goals
